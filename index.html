@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Guardaroba Pro - Gestione Divise</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Guardaroba Pro - Gestione Divise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
-    body { 
-        font-family: 'Plus Jakarta Sans', sans-serif; 
-        -webkit-tap-highlight-color: transparent;
-        overscroll-behavior-y: contain;
-    }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
+        }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-    .accordion-content { 
-        max-height: 0; 
-        overflow: hidden; 
-        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-    }
-    .accordion-content.open { 
-        max-height: 2000px; 
-    }
+        .accordion-content { 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .accordion-content.open { 
+            max-height: 2000px; 
+        }
 
-    .glass-nav {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-top: 1px solid rgba(226, 232, 240, 0.8);
-    }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+        }
 
-    .login-gradient {
-        background: radial-gradient(circle at top right, #4f46e5, #312e81);
-    }
+        .login-gradient {
+            background: radial-gradient(circle at top right, #4f46e5, #312e81);
+        }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-</style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
 
 <!-- MODALE PERSONALIZZATO -->
-<div id="custom-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm transition-opacity">
+<div id="custom-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm">
     <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl animate-fade-in text-center border border-slate-100">
         <div id="modal-icon" class="mx-auto mb-4 w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
             <i data-lucide="info" class="w-6 h-6"></i>
@@ -130,10 +130,7 @@
             </div>
 
             <div id="list-container" class="space-y-4">
-                <div class="py-24 flex flex-col items-center justify-center opacity-25">
-                    <i data-lucide="loader-2" class="w-12 h-12 animate-spin mb-4 text-indigo-600"></i>
-                    <span class="font-bold uppercase text-xs tracking-[0.2em]">Sincronizzazione dati...</span>
-                </div>
+                <!-- Caricamento -->
             </div>
         </div>
 
@@ -164,7 +161,7 @@
 </div>
 
 <script>
-    // UTILS PER EVITARE BUG DEGLI APICI (HTML INJECTION)
+    // UTILS
     const utils = {
         escapeHTML: (str) => {
             if (!str) return '';
@@ -176,7 +173,6 @@
         }
     };
 
-    // CONFIGURAZIONE
     const CONFIG = {
         sheetId: '1fSkpwqDJdoc_7IY1pkTtlhsbUIt-OdiY7Wrh0B0VXSE',
         gid: '1888602811',
@@ -188,27 +184,30 @@
         data: {},
         delivered: new Set(),
         archived: new Set(),
-        openAccordion: null // Traccia quale località è attualmente aperta
+        openAccordion: null
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    window.onload = () => {
         lucide.createIcons();
-        if (localStorage.getItem('guardaroba_session') === 'active') initApp();
+        if (localStorage.getItem('guardaroba_session') === 'active') {
+            initApp();
+        }
         document.getElementById('login-form').addEventListener('submit', handleLogin);
-    });
+    };
 
-    // FUNZIONI PER MODALI PERSONALIZZATI
     function showMessage(title, message, icon = 'info') {
+        const modal = document.getElementById('custom-modal');
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-message').innerText = message;
         document.getElementById('modal-icon').innerHTML = `<i data-lucide="${icon}" class="w-6 h-6"></i>`;
         document.getElementById('modal-icon').className = `mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center ${icon === 'alert-circle' ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'}`;
         document.getElementById('modal-actions').innerHTML = `<button onclick="closeModal()" class="w-full px-6 py-3 bg-indigo-600 text-white font-black uppercase tracking-tight rounded-2xl hover:bg-indigo-700 transition-colors">OK</button>`;
-        document.getElementById('custom-modal').classList.remove('hidden');
+        modal.classList.remove('hidden');
         lucide.createIcons();
     }
 
     function showConfirm(title, message, onConfirm) {
+        const modal = document.getElementById('custom-modal');
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-message').innerText = message;
         document.getElementById('modal-icon').innerHTML = `<i data-lucide="alert-triangle" class="w-6 h-6"></i>`;
@@ -221,7 +220,7 @@
             closeModal();
             onConfirm();
         };
-        document.getElementById('custom-modal').classList.remove('hidden');
+        modal.classList.remove('hidden');
         lucide.createIcons();
     }
 
@@ -231,33 +230,25 @@
 
     function handleLogin(e) {
         e.preventDefault();
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
+        const uInput = document.getElementById('username').value;
+        const pInput = document.getElementById('password').value;
         
-        try {
-            if (u === atob(CONFIG.u) && p === atob(CONFIG.p)) {
-                if (document.getElementById('remember-me').checked) {
-                    localStorage.setItem('guardaroba_session', 'active');
-                }
-                initApp();
-            } else {
-                showLoginError();
+        if (uInput === atob(CONFIG.u) && pInput === atob(CONFIG.p)) {
+            if (document.getElementById('remember-me').checked) {
+                localStorage.setItem('guardaroba_session', 'active');
             }
-        } catch (error) {
-            showLoginError();
+            initApp();
+        } else {
+            const err = document.getElementById('login-error');
+            err.classList.remove('hidden');
+            setTimeout(() => err.classList.add('hidden'), 3000);
         }
-    }
-
-    function showLoginError() {
-        const err = document.getElementById('login-error');
-        err.classList.remove('hidden');
-        setTimeout(() => err.classList.add('hidden'), 4000);
     }
 
     function initApp() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-app').classList.remove('hidden');
-        loadData();
+        loadLocalData();
         fetchSheetData();
     }
 
@@ -266,7 +257,7 @@
         location.reload();
     }
 
-    function loadData() {
+    function loadLocalData() {
         const saved = localStorage.getItem('guardaroba_storage_v5');
         if (saved) {
             const parsed = JSON.parse(saved);
@@ -275,7 +266,7 @@
         }
     }
 
-    function saveData() {
+    function saveLocalData() {
         localStorage.setItem('guardaroba_storage_v5', JSON.stringify({
             delivered: Array.from(state.delivered),
             archived: Array.from(state.archived)
@@ -284,178 +275,164 @@
 
     async function fetchSheetData() {
         const list = document.getElementById('list-container');
-        
-        list.innerHTML = `
-            <div class="py-24 flex flex-col items-center justify-center opacity-25">
-                <i data-lucide="loader-2" class="w-12 h-12 animate-spin mb-4 text-indigo-600"></i>
-                <span class="font-bold uppercase text-xs tracking-[0.2em]">Sincronizzazione dati...</span>
-            </div>
-        `;
+        list.innerHTML = `<div class="py-24 flex flex-col items-center justify-center opacity-25">
+                            <i data-lucide="loader-2" class="w-12 h-12 animate-spin mb-4 text-indigo-600"></i>
+                            <span class="font-bold uppercase text-xs tracking-[0.2em]">Sincronizzazione dati...</span>
+                        </div>`;
         lucide.createIcons();
 
         const url = `https://docs.google.com/spreadsheets/d/${CONFIG.sheetId}/gviz/tq?tqx=out:json&gid=${CONFIG.gid}`;
+        
         try {
             const res = await fetch(url);
             const text = await res.text();
+            const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+            const rows = json.table.rows || [];
             
-            const startIdx = text.indexOf('{');
-            const endIdx = text.lastIndexOf('}');
+            // Filtra e raggruppa
+            const grouped = {};
+            rows.forEach(r => {
+                const check = r.c[12]?.v?.toString().toLowerCase();
+                if (check && check.includes('si')) {
+                    const loc = r.c[6]?.v?.toString() || "Varie";
+                    const nome = r.c[1]?.v?.toString() || "N.D.";
+                    const id = `id-${nome.toLowerCase().replace(/[^a-z0-9]/g, '')}-${loc.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                    
+                    if (!grouped[loc]) grouped[loc] = [];
+                    grouped[loc].push({ id, nome });
+                }
+            });
             
-            if (startIdx === -1 || endIdx === -1) {
-                throw new Error("Formato di risposta non valido.");
-            }
-            
-            const json = JSON.parse(text.substring(startIdx, endIdx + 1));
-            const rows = json.table?.rows || [];
-            const filtered = rows.filter(r => r.c[12]?.v?.toString().toLowerCase().includes('si'));
-            
-            state.data = filtered.reduce((acc, r) => {
-                const loc = r.c[6]?.v?.toString() || "Varie";
-                const nome = r.c[1]?.v?.toString() || "N.D.";
-                
-                const safeNameForId = nome.toLowerCase().replace(/[^a-z0-9]/g, '');
-                const safeLocForId = loc.toLowerCase().replace(/[^a-z0-9]/g, '');
-                const id = `id-${safeNameForId}-${safeLocForId}`;
-                
-                if (!acc[loc]) acc[loc] = [];
-                acc[loc].push({ id, nome });
-                return acc;
-            }, {});
-            
+            state.data = grouped;
             render();
-        } catch (err) { 
+        } catch (err) {
             console.error(err);
-            render(); 
-            showMessage("Errore di Sincronizzazione", "Impossibile recuperare i dati da Google Sheets. Riprova più tardi.", "alert-circle"); 
+            showMessage("Errore Sync", "Impossibile caricare i dati. Verifica la connessione.", "alert-circle");
         }
     }
 
     function render() {
         const list = document.getElementById('list-container');
         const archive = document.getElementById('archive-container');
-        list.innerHTML = ''; 
+        const badge = document.getElementById('badge-archivio');
+        
+        list.innerHTML = '';
         archive.innerHTML = '';
         let archCount = 0;
 
-        Object.entries(state.data).forEach(([loc, staff]) => {
+        const entries = Object.entries(state.data);
+        
+        if (entries.length === 0) {
+            list.innerHTML = `<div class="py-24 text-center opacity-40"><p class="font-bold uppercase text-xs">Nessun dato trovato</p></div>`;
+        }
+
+        entries.forEach(([loc, staff]) => {
             const isArchived = state.archived.has(loc);
-            const done = staff.filter(s => state.delivered.has(s.id)).length;
+            const doneCount = staff.filter(s => state.delivered.has(s.id)).length;
             const total = staff.length;
+            const isComplete = doneCount === total;
+            const isOpen = state.openAccordion === loc;
+
+            const card = document.createElement('div');
+            card.className = `bg-white rounded-[2rem] border transition-all overflow-hidden mb-4 ${isComplete ? 'border-indigo-100' : 'border-slate-100 shadow-lg'}`;
             
-            // Verifica se questo accordion deve restare aperto
-            const shouldBeOpen = state.openAccordion === loc;
+            const headBg = isComplete ? 'bg-indigo-600' : 'bg-slate-900';
             
-            const card = createCard(loc, staff, done, total, done === total, isArchived, shouldBeOpen);
-            if (isArchived) { 
-                archive.appendChild(card); 
-                archCount++; 
-            } else { 
-                list.appendChild(card); 
+            card.innerHTML = `
+                <div class="${headBg} p-5 flex items-center justify-between cursor-pointer" onclick="toggleAccordion(this, '${utils.escapeJS(loc)}')">
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="bg-white/10 p-2 rounded-xl text-white"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
+                        <div>
+                            <h4 class="text-white font-extrabold uppercase text-xs tracking-tight">${utils.escapeHTML(loc)}</h4>
+                            <p class="text-[9px] font-bold ${isComplete ? 'text-indigo-200' : 'text-slate-400'} uppercase mt-1">${doneCount}/${total} CONSEGNATE</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                         <button onclick="event.stopPropagation(); toggleArchive('${utils.escapeJS(loc)}', ${!isArchived})" class="p-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all ${!isComplete && !isArchived ? 'opacity-0 pointer-events-none' : ''}">
+                            <i data-lucide="${isArchived ? 'rotate-ccw' : 'archive'}" class="w-4 h-4"></i>
+                        </button>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-white/30 transition-transform ${isOpen ? 'rotate-180' : ''}"></i>
+                    </div>
+                </div>
+                <div class="accordion-content ${isOpen ? 'open' : ''}">
+                    <div class="p-4 grid grid-cols-1 gap-2 bg-slate-50/50">
+                        ${staff.map(s => {
+                            const isDone = state.delivered.has(s.id);
+                            return `
+                                <button onclick="toggleItem('${utils.escapeJS(s.id)}')" ${isArchived ? 'disabled' : ''} class="flex items-center gap-3 p-4 rounded-2xl border transition-all ${isDone ? 'bg-green-50 border-green-200' : 'bg-white border-slate-100'}">
+                                    <div class="w-5 h-5 rounded-lg border-2 flex-shrink-0 flex items-center justify-center ${isDone ? 'bg-green-500 border-green-500' : 'border-slate-200'}">
+                                        <i data-lucide="check" class="w-3 h-3 text-white ${isDone ? '' : 'hidden'}"></i>
+                                    </div>
+                                    <span class="font-bold text-[11px] uppercase truncate ${isDone ? 'text-green-700 line-through opacity-50' : 'text-slate-600'}">${utils.escapeHTML(s.nome)}</span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+
+            if (isArchived) {
+                archive.appendChild(card);
+                archCount++;
+            } else {
+                list.appendChild(card);
             }
         });
 
-        if (Object.keys(state.data).length === 0) {
-            list.innerHTML = `
-                <div class="py-24 flex flex-col items-center justify-center opacity-50">
-                    <i data-lucide="inbox" class="w-12 h-12 mb-4 text-indigo-400"></i>
-                    <span class="font-bold uppercase text-xs tracking-widest">Nessun dato trovato</span>
-                </div>
-            `;
-        }
-
-        const badge = document.getElementById('badge-archivio');
         badge.innerText = archCount;
         archCount > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
         lucide.createIcons();
     }
 
-    function createCard(loc, staff, done, total, complete, archived, isOpen) {
-        const div = document.createElement('div');
-        div.className = `bg-white rounded-[2rem] border transition-all overflow-hidden mb-4 ${complete ? 'border-indigo-100 shadow-sm' : 'border-slate-100 shadow-lg animate-fade-in'}`;
-        const headBg = complete ? 'bg-indigo-600' : 'bg-slate-900';
-
-        div.innerHTML = `
-            <div class="${headBg} p-5 flex items-center justify-between cursor-pointer" onclick="toggleAccordion(this, '${utils.escapeJS(loc)}')">
-                <div class="flex items-center gap-4 text-left flex-1">
-                    <div class="bg-white/10 p-2 rounded-xl text-white"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
-                    <div>
-                        <h4 class="text-white font-extrabold uppercase text-xs tracking-tight">${utils.escapeHTML(loc)}</h4>
-                        <p class="text-[9px] font-bold ${complete ? 'text-indigo-100' : 'text-slate-400'} uppercase tracking-widest mt-1">${done}/${total} CONSEGNATE</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="event.stopPropagation(); toggleArchive('${utils.escapeJS(loc)}', ${!archived})" ${!complete && !archived ? 'disabled' : ''} class="p-2 rounded-xl bg-white/10 text-white ${!complete && !archived ? 'opacity-0' : 'active:scale-90 transition-all hover:bg-white/20'}">
-                        <i data-lucide="${archived ? 'rotate-ccw' : 'archive'}" class="w-4 h-4"></i>
-                    </button>
-                    <i data-lucide="chevron-down" class="w-4 h-4 text-white/30 arrow-icon transition-transform" style="${isOpen ? 'transform: rotate(180deg)' : ''}"></i>
-                </div>
-            </div>
-            <div class="accordion-content ${isOpen ? 'open' : ''}">
-                <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50/50">
-                    ${staff.map(s => {
-                        const isDone = state.delivered.has(s.id);
-                        return `
-                            <button onclick="toggleItem('${utils.escapeJS(s.id)}')" ${archived ? 'disabled' : ''} class="flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${isDone ? 'bg-green-50 border-green-200' : 'bg-white border-slate-100 active:border-indigo-200'}">
-                                <div class="w-5 h-5 rounded-lg border-2 flex-shrink-0 ${isDone ? 'bg-green-500 border-green-500' : 'border-slate-200'} flex items-center justify-center transition-colors">
-                                    <i data-lucide="check" class="w-3 h-3 text-white ${isDone ? '' : 'hidden'}"></i>
-                                </div>
-                                <span class="font-bold text-[11px] uppercase tracking-tight truncate ${isDone ? 'text-green-700 line-through opacity-60' : 'text-slate-600'}">${utils.escapeHTML(s.nome)}</span>
-                            </button>
-                        `;
-                    }).join('')}
-                </div>
-            </div>`;
-        return div;
-    }
-
     function toggleAccordion(btn, loc) {
-        const content = btn.closest('.bg-white').querySelector('.accordion-content');
-        const arrow = btn.closest('.bg-white').querySelector('.arrow-icon');
-        const isOpen = content.classList.toggle('open');
+        const card = btn.closest('.bg-white');
+        const content = card.querySelector('.accordion-content');
+        const arrow = card.querySelector('.lucide-chevron-down');
         
-        // Aggiorna lo stato globale per ricordare quale accordion è aperto
-        if (isOpen) {
-            state.openAccordion = loc;
-            arrow.style.transform = 'rotate(180deg)';
-        } else {
-            state.openAccordion = null;
-            arrow.style.transform = 'rotate(0deg)';
-        }
+        const isNowOpen = content.classList.toggle('open');
+        state.openAccordion = isNowOpen ? loc : null;
+        
+        arrow.classList.toggle('rotate-180', isNowOpen);
     }
 
     function toggleItem(id) {
-        state.delivered.has(id) ? state.delivered.delete(id) : state.delivered.add(id);
-        saveData(); 
-        render(); // Grazie al nuovo stato openAccordion, l'accordion non si chiuderà
+        if (state.delivered.has(id)) {
+            state.delivered.delete(id);
+        } else {
+            state.delivered.add(id);
+        }
+        saveLocalData();
+        render();
     }
 
     function toggleArchive(loc, status) {
-        status ? state.archived.add(loc) : state.archived.delete(loc);
-        if (state.openAccordion === loc) state.openAccordion = null;
-        saveData(); render();
-    }
-
-    function clearCache() {
-        showConfirm(
-            "Sei sicuro?", 
-            "Questa operazione rimuoverà tutte le spunte locali e ripristinerà l'archivio. L'operazione non può essere annullata.",
-            () => {
-                state.delivered = new Set(); 
-                state.archived = new Set();
-                state.openAccordion = null;
-                saveData(); 
-                render();
-            }
-        );
+        if (status) {
+            state.archived.add(loc);
+            if (state.openAccordion === loc) state.openAccordion = null;
+        } else {
+            state.archived.delete(loc);
+        }
+        saveLocalData();
+        render();
     }
 
     function switchTab(tab) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.getElementById(`tab-${tab}`).classList.add('active');
+        
         const isCons = tab === 'consegne';
         document.getElementById('nav-consegne').className = isCons ? "flex flex-col items-center gap-1 text-indigo-600 scale-110 transition-all" : "flex flex-col items-center gap-1 text-slate-400 transition-all";
         document.getElementById('nav-archivio').className = !isCons ? "flex flex-col items-center gap-1 text-indigo-600 scale-110 transition-all" : "flex flex-col items-center gap-1 text-slate-400 transition-all relative";
-        render();
+    }
+
+    function clearCache() {
+        showConfirm("Resettare tutto?", "Verranno rimosse tutte le spunte e l'archivio verrà svuotato.", () => {
+            state.delivered = new Set();
+            state.archived = new Set();
+            state.openAccordion = null;
+            saveLocalData();
+            render();
+        });
     }
 </script>
 </body>
